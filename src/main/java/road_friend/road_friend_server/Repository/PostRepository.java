@@ -1,6 +1,7 @@
 package road_friend.road_friend_server.Repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,21 @@ public class PostRepository {
 
     }
 
+    //특정 글 조회
+    public Post findByIdAndBoardId(Long postId, Long boardId) {
+        try {
+            return em.createQuery(
+                            "select p from Post p join p.board b " +
+                                    "where p.id = :postId and b.id = :boardId", Post.class
+                    )
+                    .setParameter("postId", postId)
+                    .setParameter("boardId", boardId)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;  // or Optional.empty();
+        }
+    }
 
 
 

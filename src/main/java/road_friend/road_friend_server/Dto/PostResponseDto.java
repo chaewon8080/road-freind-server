@@ -3,6 +3,8 @@ package road_friend.road_friend_server.Dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class PostResponseDto {
@@ -31,4 +33,8 @@ public class PostResponseDto {
     private int likeCount;
 
     private LocalDateTime createdAt=LocalDateTime.now();
+    private List<CommentResponseDto> comments = new ArrayList<>();
+    private int commentCount;
+
+
 }

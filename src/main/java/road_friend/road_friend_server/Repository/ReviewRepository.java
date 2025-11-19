@@ -39,6 +39,15 @@ public class ReviewRepository {
 
     }
 
+    public Review findOne(Long reviewId){
+        return em.find(Review.class,reviewId);
+
+    }
+
+    public void delete(Review review) {
+        em.remove(review);
+    }
+
 
 
 

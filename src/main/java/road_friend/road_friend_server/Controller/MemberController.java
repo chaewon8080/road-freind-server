@@ -81,6 +81,7 @@ public class MemberController {
         MemberDto memberDto = new MemberDto();
         memberDto.setEmail(member.getEmail());
         memberDto.setNickname(member.getNickname());
+        memberDto.setId(member.getId());
 
         return memberDto;
     }
