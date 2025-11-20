@@ -97,7 +97,10 @@ public class BusStopController {
     //특정 버스 정류장 리뷰 조회
     @GetMapping("/{busStopId}")
     public List<ReviewDto> getReviews(@PathVariable("busStopId") Long busStopId, @RequestParam(defaultValue = "latest") String sort, @RequestParam(required = false) List<String> tags, @RequestParam(required = false) String keyword
-    ){
+    , Authentication authentication){
+
+        Member member = (Member) authentication.getPrincipal();
+
         List<Review> reviews = reviewRepository.getReviewsByBusStop(busStopId);
 
 
@@ -235,6 +238,22 @@ public class BusStopController {
             dto.setCategoryTags(review.getCategoryTags());
             dto.setAuthorNickName(review.getAuthor().getNickname());
             dto.setBusStopName(review.getBusStop().getName());
+
+            //좋아요 이미 눌렀는지
+            ReviewLike existing = reviewLikeRepository.findByMemberAndReview(member.getId(),review.getId());
+
+            if(existing == null){
+                dto.setLiked(false);
+
+
+            }
+            else{
+
+                dto.setLiked(true);
+
+
+            }
+
 
             dtos.add(dto);
 

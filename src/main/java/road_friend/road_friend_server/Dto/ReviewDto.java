@@ -28,6 +28,7 @@ public class ReviewDto {
     private String[] timeTags;  // 00:00~23:00
     private String imageUrl;
     private int likeCount;
+    private boolean liked;
 
     private LocalDateTime createdAt=LocalDateTime.now();
 

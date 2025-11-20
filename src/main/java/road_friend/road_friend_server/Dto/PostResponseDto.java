@@ -36,5 +36,7 @@ public class PostResponseDto {
     private List<CommentResponseDto> comments = new ArrayList<>();
     private int commentCount;
 
+    private boolean liked;
+
 
 }

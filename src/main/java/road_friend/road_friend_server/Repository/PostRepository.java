@@ -39,6 +39,15 @@ public class PostRepository {
 
     }
 
+    //글 삭제
+    public void delete(Post post){
+        em.remove(post);
+    }
+
+    public Post findOne(Long postId){
+        return em.find(Post.class,postId);
+    }
+
     //특정 글 조회
     public Post findByIdAndBoardId(Long postId, Long boardId) {
         try {
