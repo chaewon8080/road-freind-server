@@ -1,5 +1,7 @@
 package road_friend.road_friend_server.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ public class ReportController {
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
 
+    ObjectMapper objectMapper = new ObjectMapper();
 
 
     //모든 신고내역 조회
@@ -44,6 +47,7 @@ public class ReportController {
             dto.setReason(report.getReason());
             dto.setReporterEmail(report.getReporterEmail());
             dto.setTargetId(report.getTargetId());
+            dto.setId(report.getId());
 
             dtos.add(dto);
 
@@ -193,7 +197,7 @@ public class ReportController {
     }
 
     @GetMapping("/reports/{reportId}/reviews/{reviewId}")
-    public ReviewDto getReviewDetail(@PathVariable Long reviewId){
+    public ReviewDto getReviewDetail(@PathVariable Long reviewId) throws JsonProcessingException {
 
 
         Review review = reviewRepository.findOne(reviewId);
@@ -205,9 +209,9 @@ public class ReportController {
         dto.setAuthorId(review.getAuthor().getId());
         dto.setAuthorNickName(review.getAuthor().getNickname());
         dto.setContent(review.getContent());
-        dto.setDayTags(review.getDayTags());
-        dto.setTimeTags(review.getTimeTags());
-        dto.setCategoryTags(review.getCategoryTags());
+        dto.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
+        dto.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
+        dto.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
         dto.setImageUrl(review.getImageUrl());
         dto.setLikeCount(review.getLikeCount());
         dto.setIsAnonymous(review.getIsAnonymous());

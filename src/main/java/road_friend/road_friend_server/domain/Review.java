@@ -3,6 +3,7 @@ package road_friend.road_friend_server.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import road_friend.road_friend_server.converter.StringArrayConverter;
 
 import java.time.LocalDateTime;
 
@@ -24,11 +25,11 @@ public class Review {
     private Boolean isAnonymous; //익명 여부
 
     private String content;
-    private String[] categoryTags; // "민원", "실시간 제보", "일반"
-    private String[] dayTags; // 월~일
-    private String[] timeTags;  // 00:00~23:00
+    private String categoryTags; // "민원", "실시간 제보", "일반"
+    private String dayTags; // 월~일
+    private String timeTags;  // 00:00~23:00
     private String imageUrl;
     private int likeCount;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt=LocalDateTime.now();
 }

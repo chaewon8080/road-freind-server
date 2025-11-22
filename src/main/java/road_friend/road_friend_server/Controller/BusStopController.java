@@ -1,6 +1,8 @@
 package road_friend.road_friend_server.Controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,11 @@ public class BusStopController {
     private final BusStopRepository busStopRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper();
+
+
 
 
     @GetMapping("/nearby")
@@ -68,18 +75,18 @@ public class BusStopController {
 
     //특정 버스 정류장 리뷰 작성
     @PostMapping("/{busStopId}")
-    public ReviewDto createReview(@PathVariable("busStopId")Long busStopId, @RequestBody ReviewDto dto, Authentication authentication){
+    public ReviewDto createReview(@PathVariable("busStopId")Long busStopId, @RequestBody ReviewDto dto, Authentication authentication) throws JsonProcessingException {
         Member member = (Member) authentication.getPrincipal();
         Review review = new Review();
         review.setBusStop(busStopRepository.findOne(busStopId));
         review.setAuthor(member);
         review.setContent(dto.getContent());
-        review.setDayTags(dto.getDayTags());
-        review.setCategoryTags(dto.getCategoryTags());
+        review.setDayTags(mapper.writeValueAsString(dto.getDayTags()));
+        review.setCategoryTags(mapper.writeValueAsString(dto.getCategoryTags()));
         review.setImageUrl(dto.getImageUrl());
         review.setIsAnonymous(dto.getIsAnonymous());
         review.setLikeCount(0);
-        review.setTimeTags(dto.getTimeTags());
+        review.setTimeTags(mapper.writeValueAsString(dto.getTimeTags()));
         review.setCreatedAt(dto.getCreatedAt());
 
         reviewRepository.saveReview(review);
@@ -97,7 +104,7 @@ public class BusStopController {
     //특정 버스 정류장 리뷰 조회
     @GetMapping("/{busStopId}")
     public List<ReviewDto> getReviews(@PathVariable("busStopId") Long busStopId, @RequestParam(defaultValue = "latest") String sort, @RequestParam(required = false) List<String> tags, @RequestParam(required = false) String keyword
-    , Authentication authentication){
+    , Authentication authentication) throws JsonProcessingException {
 
         Member member = (Member) authentication.getPrincipal();
 
@@ -129,11 +136,11 @@ public class BusStopController {
                     for (Review review : reviews) {
                         boolean found = false;
 
-                        String[] dayTags = review.getDayTags();
+                        String[] dayTags = objectMapper.readValue(review.getDayTags(), String[].class);
                         if (dayTags == null) continue;  // null이면 skip
 
 
-                        for( String t : review.getDayTags()){
+                        for( String t : objectMapper.readValue(review.getDayTags(), String[].class)){
 
                             if(t.equals(tag)){
 
@@ -163,10 +170,10 @@ public class BusStopController {
                     for (Review r : reviews) {
                         boolean found = false;
 
-                        String[] timeTags = r.getTimeTags();
+                        String[] timeTags = objectMapper.readValue(r.getTimeTags(), String[].class);
                         if (timeTags == null) continue;
 
-                        for (String t : r.getTimeTags()) {
+                        for (String t : objectMapper.readValue(r.getTimeTags(), String[].class)) {
                             if (t.equals(tag)) {
                                 found = true;
                                 break;
@@ -188,10 +195,10 @@ public class BusStopController {
                 for (Review r : reviews) {
                     boolean found = false;
 
-                    String[] categoryTags = r.getCategoryTags();
+                    String[] categoryTags = objectMapper.readValue(r.getCategoryTags(), String[].class);
                     if (categoryTags == null) continue;
 
-                    for (String t : r.getCategoryTags()) {
+                    for (String t : objectMapper.readValue(r.getCategoryTags(), String[].class)) {
                         if (t.equals(tag)) {
                             found = true;
                             break;
@@ -227,15 +234,15 @@ public class BusStopController {
             ReviewDto dto = new ReviewDto();
             dto.setBusStopId(busStopId);
             dto.setContent(review.getContent());
-            dto.setDayTags(review.getDayTags());
+            dto.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
             dto.setCreatedAt(review.getCreatedAt());
             dto.setImageUrl(review.getImageUrl());
             dto.setLikeCount(review.getLikeCount());
-            dto.setTimeTags(review.getTimeTags());
+            dto.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
             dto.setIsAnonymous(review.getIsAnonymous());
             dto.setAuthorId(review.getAuthor().getId());
             dto.setId(review.getId());
-            dto.setCategoryTags(review.getCategoryTags());
+            dto.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
             dto.setAuthorNickName(review.getAuthor().getNickname());
             dto.setBusStopName(review.getBusStop().getName());
 
@@ -325,7 +332,7 @@ public class BusStopController {
 
     //특정 리뷰 불러오기
     @GetMapping("/reviews/{reviewId}")
-    public ReviewDto getReview(@PathVariable Long reviewId) {
+    public ReviewDto getReview(@PathVariable Long reviewId) throws JsonProcessingException {
         Review review = reviewRepository.findOne(reviewId);
 
         if (review == null) {
@@ -339,9 +346,9 @@ public class BusStopController {
         dto.setAuthorId(review.getAuthor().getId());
         dto.setAuthorNickName(review.getAuthor().getNickname());
         dto.setContent(review.getContent());
-        dto.setDayTags(review.getDayTags());
-        dto.setTimeTags(review.getTimeTags());
-        dto.setCategoryTags(review.getCategoryTags());
+        dto.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
+        dto.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
+        dto.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
         dto.setImageUrl(review.getImageUrl());
         dto.setLikeCount(review.getLikeCount());
         dto.setIsAnonymous(review.getIsAnonymous());
@@ -359,7 +366,7 @@ public class BusStopController {
             @PathVariable Long reviewId,
             @RequestBody ReviewDto dto,
             Authentication authentication
-    ) {
+    ) throws JsonProcessingException {
         Member member = (Member) authentication.getPrincipal();
 
         Review review = reviewRepository.findOne(reviewId);
@@ -374,18 +381,18 @@ public class BusStopController {
 
         // 수정 가능한 필드들 업데이트
         review.setContent(dto.getContent());
-        review.setDayTags(dto.getDayTags());
-        review.setTimeTags(dto.getTimeTags());
-        review.setCategoryTags(dto.getCategoryTags());
+        review.setDayTags(mapper.writeValueAsString(dto.getDayTags()));
+        review.setTimeTags(mapper.writeValueAsString(dto.getTimeTags()));
+        review.setCategoryTags(mapper.writeValueAsString(dto.getCategoryTags()));
         review.setImageUrl(dto.getImageUrl());
 
         // response 생성
         ReviewDto response = new ReviewDto();
         response.setId(review.getId());
         response.setContent(review.getContent());
-        response.setDayTags(review.getDayTags());
-        response.setTimeTags(review.getTimeTags());
-        response.setCategoryTags(review.getCategoryTags());
+        response.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
+        response.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
+        response.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
         response.setImageUrl(review.getImageUrl());
         response.setCreatedAt(review.getCreatedAt());
         response.setAuthorId(member.getId());
