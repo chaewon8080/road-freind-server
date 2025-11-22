@@ -15,15 +15,15 @@ public class Report {
     @GeneratedValue
     private Long id;
 
-    // 신고자
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member reporter;
+    // 신고자 이메일
+    private String reporterEmail;
 
     // 신고 대상 ID (Post, Comment, Member 중 하나의 PK)
     private Long targetId;
 
-    // 신고 대상 타입 ("POST", "COMMENT", "USER")
-    private String targetType;
+    // 신고 대상 타입
+    @Enumerated(EnumType.STRING)
+    private ReportType type;
 
     private String reason;
 

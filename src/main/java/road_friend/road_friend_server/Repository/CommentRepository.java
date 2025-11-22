@@ -33,7 +33,7 @@ public class CommentRepository {
     }
 
     // 댓글 조회
-    public Comment findById(Long id) {
+    public Comment findOne(Long id) {
         return em.find(Comment.class, id);
     }
 

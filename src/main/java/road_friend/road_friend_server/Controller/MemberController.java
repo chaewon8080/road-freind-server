@@ -11,6 +11,7 @@ import road_friend.road_friend_server.Dto.MemberDto;
 import road_friend.road_friend_server.JWT.JwtUtil;
 import road_friend.road_friend_server.Repository.MemberRepository;
 import road_friend.road_friend_server.domain.Member;
+import road_friend.road_friend_server.domain.Role;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ public class MemberController {
         member.setEmail(memberdto.getEmail());
         member.setNickname(memberdto.getNickname());
         member.setPassword(passwordEncoder.encode(memberdto.getPassword()));
+        member.setRole(Role.USER);
         result.put("message", "회원가입 성공");
 
 
@@ -64,7 +66,7 @@ public class MemberController {
             result.put("message","비밀번호가 틀렸습니다.");
             return ResponseEntity.status(404).body(result);        }
 
-        String token = jwtUtil.generateToken(member.getEmail());
+        String token = jwtUtil.generateToken(member.getEmail(), member.getRole().name());
         result.put("message", token);
         return ResponseEntity.ok(result); // ✅ JSON 반환
     }

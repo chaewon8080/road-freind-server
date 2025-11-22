@@ -28,6 +28,8 @@ public class SecurityConfig {
                         // 인증 없이 접근 허용
                         .requestMatchers("/auth/signup", "/auth/login",
                                 "/bus-stops/nearby", "/bus-stops/search").permitAll()
+                        //관리자만 접근 가능한 URL
+                        .requestMatchers("/reports/**").hasRole("ADMIN")
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )

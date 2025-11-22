@@ -28,16 +28,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-
-
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String email = null;
+        String role = null;   // 역할 가져올 변수
 
         if(authHeader != null && authHeader.startsWith("Bearer ")){
+
             token = authHeader.substring(7);
+
             try {
                 email = jwtUtil.getEmailFromToken(token);
+                role = jwtUtil.getRoleFromToken(token);   // 역할 추출
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
@@ -45,14 +47,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+
             Member member = memberRepository.findByEmail(email);
+
             if(member != null){
+
+                // 역할이 없으면 USER로 기본값 설정
+                if(role == null) role = "USER";
+
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 member,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_USER")) // 최소 권한
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
                         );
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -60,5 +69,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 }

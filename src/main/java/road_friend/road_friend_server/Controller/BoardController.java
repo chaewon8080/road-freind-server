@@ -369,7 +369,7 @@ public class BoardController {
         Member member = (Member) authentication.getPrincipal();
         Post post =postRepository.findByIdAndBoardId(postId,boardId);
 
-        Comment comment = commentRepository.findById(commentId);
+        Comment comment = commentRepository.findOne(commentId);
 
         CommentResponseDto dto = new CommentResponseDto();
 
@@ -446,7 +446,7 @@ public class BoardController {
     ) {
         Member member = (Member) authentication.getPrincipal();
 
-        Comment comment = commentRepository.findById(commentId);
+        Comment comment = commentRepository.findOne(commentId);
         if (comment == null) {
             throw new IllegalArgumentException("댓글이 존재하지 않습니다.");
         }
@@ -546,7 +546,7 @@ public class BoardController {
     ) {
         Member member = (Member) authentication.getPrincipal();
 
-        Comment comment = commentRepository.findById(commentId);
+        Comment comment = commentRepository.findOne(commentId);
         if (comment == null) {
             throw new IllegalArgumentException("댓글이 존재하지 않습니다.");
         }
