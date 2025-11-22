@@ -11,4 +11,5 @@ public class ReportDto {
     private Long targetId;
     private String reporterEmail;
     private String reason;
+    private Long id;
 }

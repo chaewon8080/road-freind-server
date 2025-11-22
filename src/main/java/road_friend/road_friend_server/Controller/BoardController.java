@@ -38,7 +38,7 @@ public class BoardController {
             dto.setDeparture(board.getDeparture());
             dto.setArrival(board.getArrival());
 
-            List<Post> posts = postRepository.getPostsByBoard(board.getId());
+          /*  List<Post> posts = postRepository.getPostsByBoard(board.getId());
 
             List<PostResponseDto> postDtos = new ArrayList<>();
             for(Post post : posts){
@@ -64,7 +64,7 @@ public class BoardController {
 
             }
 
-            dto.setPosts(postDtos);
+            dto.setPosts(postDtos);*/
             boardsDto.add(dto);
 
         }
