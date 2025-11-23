@@ -1,11 +1,11 @@
-# 1단계: 빌드 Stage
-FROM gradle:8.7-jdk17 AS builder
+# 빌드
+FROM gradle:8.7-jdk18 AS builder
 WORKDIR /app
 COPY . .
 RUN gradle build -x test
 
-# 2단계: 런타임 Stage
-FROM eclipse-temurin:17-jre
+#런타임
+FROM eclipse-temurin:18-jre
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
