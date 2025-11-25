@@ -19,6 +19,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+
     @Value("${cors.allowed-origins}")
     private String frontUrl;
 
@@ -31,11 +33,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 인증 없이 접근 허용
                         .requestMatchers("/auth/signup", "/auth/login",
-                                "/bus-stops/nearby", "/bus-stops/search").permitAll()
+                                "/bus-stops/nearby", "/bus-stops/search","/oauth2/**","/login/**").permitAll()
                         //관리자만 접근 가능한 URL
                         .requestMatchers("/reports/**").hasRole("ADMIN")
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
+
+                )
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuthSuccessHandler)
                 )
                 // JWT 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
