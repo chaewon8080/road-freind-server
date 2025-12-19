@@ -48,6 +48,18 @@ public class ReviewRepository {
         em.remove(review);
     }
 
+    // 내가 쓴 리뷰 조회
+    public List<Review> getMyReviews(Long memberId) {
+        return em.createQuery(
+                        "SELECT r FROM Review r " +
+                                "WHERE r.author.id = :memberId " +
+                                "ORDER BY r.createdAt DESC",
+                        Review.class
+                )
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
 
 
 

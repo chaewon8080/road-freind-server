@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import road_friend.road_friend_server.domain.Review;
 import road_friend.road_friend_server.domain.ReviewLike;
 
 import java.util.List;
@@ -46,6 +47,16 @@ public class ReviewLikeRepository {
                         ReviewLike.class
                 )
                 .setParameter("reviewId", reviewId)
+                .getResultList();
+    }
+
+    // 특정 회원이 좋아요한 리뷰 목록 (Review 엔티티 반환)
+    public List<Review> findLikedReviewsByMember(Long memberId) {
+        return em.createQuery(
+                        "select rl.review from ReviewLike rl where rl.member.id = :memberId order by rl.id desc",
+                        Review.class
+                )
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 }

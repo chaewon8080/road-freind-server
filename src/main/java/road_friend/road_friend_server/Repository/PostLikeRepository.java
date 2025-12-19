@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import road_friend.road_friend_server.domain.Post;
 import road_friend.road_friend_server.domain.PostLike;
 import road_friend.road_friend_server.domain.ReviewLike;
 
@@ -47,6 +48,19 @@ public class PostLikeRepository {
                         PostLike.class
                 )
                 .setParameter("postId", postId)
+                .getResultList();
+    }
+
+    // 내가 좋아요 누른 글 조회
+    public List<Post> findLikedPostsByMember(Long memberId) {
+        return em.createQuery(
+                        "select pl.post " +
+                                "from PostLike pl " +
+                                "where pl.member.id = :memberId " +
+                                "order by pl.id desc",
+                        Post.class
+                )
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 }

@@ -181,6 +181,116 @@ public class BoardController {
     }
 
 
+    // 내가 쓴 글 조회
+    @GetMapping("/myposts")
+    public List<PostResponseDto> getMyPosts(
+
+      Authentication authentication
+    ) {
+
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Post> posts = postRepository.getMyPosts(member.getId());
+
+
+
+        List<PostResponseDto> list = new ArrayList<>();
+        for (Post p : posts) {
+            PostResponseDto res = new PostResponseDto();
+            res.setId(p.getId());
+            res.setTitle(p.getTitle());
+            res.setContent(p.getContent());
+            res.setCategory(p.getCategory());
+            res.setDepartureTag(p.getDepartureTag());
+            res.setArrivalTag(p.getArrivalTag());
+            res.setTimeTag(p.getTimeTag());
+            res.setLikeCount(p.getLikeCount());
+            res.setCreatedAt(p.getCreatedAt());
+            res.setAuthorId(p.getAuthor().getId());
+            res.setAuthorNickName(p.getAuthor().getNickname());
+            res.setCommentCount(p.getComments().size());
+            res.setBoardId(p.getBoard().getId());
+            list.add(res);
+        }
+
+        return list;
+    }
+
+
+    // 내가 좋아요한 글 조회
+    @GetMapping("/mylikeposts")
+    public List<PostResponseDto> getMyLikePosts(
+
+            Authentication authentication
+    ) {
+
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Post> posts = postLikeRepository.findLikedPostsByMember(member.getId());
+
+
+
+        List<PostResponseDto> list = new ArrayList<>();
+        for (Post p : posts) {
+            PostResponseDto res = new PostResponseDto();
+            res.setId(p.getId());
+            res.setTitle(p.getTitle());
+            res.setContent(p.getContent());
+            res.setCategory(p.getCategory());
+            res.setDepartureTag(p.getDepartureTag());
+            res.setArrivalTag(p.getArrivalTag());
+            res.setTimeTag(p.getTimeTag());
+            res.setLikeCount(p.getLikeCount());
+            res.setCreatedAt(p.getCreatedAt());
+            res.setAuthorId(p.getAuthor().getId());
+            res.setAuthorNickName(p.getAuthor().getNickname());
+            res.setCommentCount(p.getComments().size());
+            res.setBoardId(p.getBoard().getId());
+            list.add(res);
+        }
+
+        return list;
+    }
+
+
+
+    // 내가 댓글 단 글 조회
+    @GetMapping("/mycommentposts")
+    public List<PostResponseDto> getMyCommentPosts(
+
+            Authentication authentication
+    ) {
+
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Post> posts = commentRepository.findPostsCommentedByMember(member.getId());
+
+
+
+        List<PostResponseDto> list = new ArrayList<>();
+        for (Post p : posts) {
+            PostResponseDto res = new PostResponseDto();
+            res.setId(p.getId());
+            res.setTitle(p.getTitle());
+            res.setContent(p.getContent());
+            res.setCategory(p.getCategory());
+            res.setDepartureTag(p.getDepartureTag());
+            res.setArrivalTag(p.getArrivalTag());
+            res.setTimeTag(p.getTimeTag());
+            res.setLikeCount(p.getLikeCount());
+            res.setCreatedAt(p.getCreatedAt());
+            res.setAuthorId(p.getAuthor().getId());
+            res.setAuthorNickName(p.getAuthor().getNickname());
+            res.setCommentCount(p.getComments().size());
+            res.setBoardId(p.getBoard().getId());
+            list.add(res);
+        }
+
+        return list;
+    }
+
+
+
 
 
 

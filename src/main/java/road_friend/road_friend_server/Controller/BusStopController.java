@@ -75,7 +75,8 @@ public class BusStopController {
 
     //특정 버스 정류장 리뷰 작성
     @PostMapping("/{busStopId}")
-    public ReviewDto createReview(@PathVariable("busStopId")Long busStopId, @RequestBody ReviewDto dto, Authentication authentication) throws JsonProcessingException {
+    public ReviewDto createReview(@PathVariable("busStopId")Long busStopId, @RequestBody ReviewDto dto, Authentication authentication)
+            throws JsonProcessingException {
         Member member = (Member) authentication.getPrincipal();
         Review review = new Review();
         review.setBusStop(busStopRepository.findOne(busStopId));
@@ -271,6 +272,113 @@ public class BusStopController {
 
 
     }
+
+    @GetMapping("/myreview")
+    public List<ReviewDto> getMyReviews(
+            Authentication authentication) throws JsonProcessingException {
+
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Review> reviews = reviewRepository.getMyReviews(member.getId());
+
+
+        List<ReviewDto> dtos = new ArrayList<>();
+
+        for(Review review : reviews){
+            ReviewDto dto = new ReviewDto();
+            dto.setContent(review.getContent());
+            dto.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
+            dto.setCreatedAt(review.getCreatedAt());
+            dto.setImageUrl(review.getImageUrl());
+            dto.setLikeCount(review.getLikeCount());
+            dto.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
+            dto.setIsAnonymous(review.getIsAnonymous());
+            dto.setAuthorId(review.getAuthor().getId());
+            dto.setId(review.getId());
+            dto.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
+            dto.setAuthorNickName(review.getAuthor().getNickname());
+            dto.setBusStopName(review.getBusStop().getName());
+            dto.setBusStopId(review.getBusStop().getId());
+
+            //좋아요 이미 눌렀는지
+            ReviewLike existing = reviewLikeRepository.findByMemberAndReview(member.getId(),review.getId());
+
+            if(existing == null){
+                dto.setLiked(false);
+
+
+            }
+            else{
+
+                dto.setLiked(true);
+
+
+            }
+
+
+            dtos.add(dto);
+
+        }
+
+        return dtos;
+
+
+
+    }
+
+    @GetMapping("/mylikereview")
+    public List<ReviewDto> getMyLikeReviews(
+            Authentication authentication) throws JsonProcessingException {
+
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Review> reviews = reviewLikeRepository.findLikedReviewsByMember(member.getId());
+
+
+        List<ReviewDto> dtos = new ArrayList<>();
+
+        for(Review review : reviews){
+            ReviewDto dto = new ReviewDto();
+            dto.setContent(review.getContent());
+            dto.setDayTags(objectMapper.readValue(review.getDayTags(), String[].class));
+            dto.setCreatedAt(review.getCreatedAt());
+            dto.setImageUrl(review.getImageUrl());
+            dto.setLikeCount(review.getLikeCount());
+            dto.setTimeTags(objectMapper.readValue(review.getTimeTags(), String[].class));
+            dto.setIsAnonymous(review.getIsAnonymous());
+            dto.setAuthorId(review.getAuthor().getId());
+            dto.setId(review.getId());
+            dto.setCategoryTags(objectMapper.readValue(review.getCategoryTags(), String[].class));
+            dto.setAuthorNickName(review.getAuthor().getNickname());
+            dto.setBusStopName(review.getBusStop().getName());
+            dto.setBusStopId(review.getBusStop().getId());
+
+            //좋아요 이미 눌렀는지
+            ReviewLike existing = reviewLikeRepository.findByMemberAndReview(member.getId(),review.getId());
+
+            if(existing == null){
+                dto.setLiked(false);
+
+
+            }
+            else{
+
+                dto.setLiked(true);
+
+
+            }
+
+
+            dtos.add(dto);
+
+        }
+
+        return dtos;
+
+
+
+    }
+
 
     //버스정류장 이름 조회
     @GetMapping("name/{busStopId}")

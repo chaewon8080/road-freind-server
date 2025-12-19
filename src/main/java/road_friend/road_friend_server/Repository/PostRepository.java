@@ -64,6 +64,18 @@ public class PostRepository {
         }
     }
 
+    // 내가 쓴 글 조회
+    public List<Post> getMyPosts(Long memberId) {
+        return em.createQuery(
+                        "SELECT p FROM Post p " +
+                                "WHERE p.author.id = :memberId " +
+                                "ORDER BY p.createdAt DESC",
+                        Post.class
+                )
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
 
 
 
